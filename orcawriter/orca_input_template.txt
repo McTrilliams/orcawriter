@@ -1,0 +1,20 @@
+! {{spin_restriction}} {{functional}} {{basis_set}} {{calc_type}} {{relativistic}} {{grid1}} {{final_grid}}
+! {{scf_level}} {{dispersion_correction}} {{solvent_model}}({{solvent}})
+
+%pal nprocs {{num_procs}} end
+
+%rel OneCenter {{one_center_bool}} end
+
+%method 
+    RI {{resolution_id}}
+end
+
+%basis 
+    Aux {{aux_basis_set}}
+end
+
+%scf Maxiter {{max_iter}} shift shift 0.3 erroff 0.8
+end end
+
+* xyzfile {{charge}} {{multiplicity}} {{xyz_name}}
+
