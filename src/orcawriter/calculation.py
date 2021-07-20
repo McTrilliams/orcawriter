@@ -147,7 +147,7 @@ class Calculation(CalculationBase):
         sh_param_dct = dict()
         return sh_param_dct
 
-    def to_inp(self, file: str, template=INP_TEMPLATE):
+    def to_inp(self, template=INP_TEMPLATE) -> str:
         """Replaces 'write_inp' and creates the .inp text file for an ORCA calculation."""
         #creat dict
         inp_params = self.to_inp_dict()
@@ -155,8 +155,7 @@ class Calculation(CalculationBase):
             template_str = f.read()
         tm = Template(template_str)
         output_str = tm.render(**inp_params)
-        with open(file, 'w+') as f:
-            f.write(output_str)
+        return output_str
 
     def to_sh(self, file: str, template=SH_TEMPLATE):
         """Replaces 'write_inp' and creates the .sh text file for an ORCA calculation."""
@@ -166,7 +165,6 @@ class Calculation(CalculationBase):
             template_str = f.read()
         tm = Template(template_str)
         output_str = tm.render(**sh_params)
-        with open(file, 'w+') as f:
-            f.write(output_str)
+        return output_str
 
 
