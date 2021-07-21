@@ -5,8 +5,57 @@
 import pandas as pd
 import pathlib
 import csv
-from scripts.xyzreader import read_xyz
 from typing import List
+
+def load_file(path) -> pd.DataFrame or TypeError or OSError:
+    """Load the csv table from an .xyz file returning a pd.Dataframe or an error.
+
+    TypeError if wrong file extension is passed.
+    OSError if file cannot be read.
+    """
+    if path.suffix not in ('.xyz', '.csv'):
+        return TypeError
+    try:
+        with open(path, 'r') as file:
+            df = pd.read_table(
+                    file, sep='\s+', names=['element', 'x', 'y', 'z'], header=None
+            )
+        return df
+    except OSError as error:
+        return OSError
+
+
+def clean_xyz(unclean_df: pd.DataFrame) -> pd.DataFrame:
+    """Data cleaning for the data frame including:
+    1. dropping empty rows at the header which include the no. of atoms,
+    and potentially the crystal code or description."""
+    # TODO save the description into an xyz file. -> Create a method or way to override this dropping?
+    # TODO (low) Checks for disorder through close distances? < 0.9 A
+    clean_df = unclean_df.dropna()
+    clean_df = clean_df[pd.to_numeric(clean_df['x'], errors='coerce').notnull()]
+    coord_dict = dict(x='float',
+                      y='float',
+                      z='float')
+    clean_df = clean_df.astype(coord_dict)
+    clean_df.reset_index(drop=True, inplace=True)
+    return clean_df
+
+
+def add_atom_ids(df):
+    """Add unique atom ids to each atom in the xyz df."""
+    # TODO Add element specific ids? Are these needed?
+    df.reset_index(drop=False, inplace=True)
+    df2 = df.rename(columns={'index':'atom_id'})
+    return df2
+
+
+def read_xyz(path: pathlib.Path or str):
+    """Main function to load a .xyz file"""
+    path = pathlib.Path(path)
+    unclean_df = load_file(path)
+    clean_df = clean_xyz(unclean_df)
+    full_df = add_atom_ids(clean_df)
+    return full_df
 
 
 class XyzBase(object):
@@ -52,6 +101,21 @@ class XyzBase(object):
         """
         df = read_xyz(path)
         return cls(df=df, path=path, *args, **kwargs)
+
+    @classmethod
+    def fromflask(cls,
+                  file,
+                  *args,
+                  **kwargs,
+    ):
+        """Create an Xyz object from uploading an xyz file through a flask app."""
+        df = pd.read_table(
+            file, sep='\s+', names=['element', 'x', 'y', 'z'], header=None
+        )
+        df = clean_xyz(df)
+        df = add_atom_ids(df)
+        return cls(df, *args, **kwargs)
+
 
     def atom_count(self) -> int:
         """Return the number of atoms in the XYZ object."""

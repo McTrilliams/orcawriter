@@ -1,7 +1,5 @@
 
 
-
-
 class Parameters:
     '''Create a container for a set of parameters'''
     #Todo Can I sub class a dictionary? Just use NamedTuple? Dataclass?

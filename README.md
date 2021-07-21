@@ -1,4 +1,4 @@
-# dftauto2
+# orcawriter
 ## Package for creating DFT calculation submission files for the ORCA 4.0.1 package.
 
 
