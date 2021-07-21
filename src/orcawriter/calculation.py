@@ -9,7 +9,7 @@ SH_TEMPLATE = r'my_class/orca_sh_template.txt'
 class CalculationBase:
     """Base Class for an ORCA DFT calculation."""
 
-    def __init__(self, args, **kwargs):
+    def __init__(self, **kwargs):
         """Create an empty object, unless kwargs are passed."""
         if kwargs:
             for key, value in kwargs.items():
