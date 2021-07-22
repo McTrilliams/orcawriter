@@ -29,20 +29,6 @@ class CalculationBase:
 
 class Calculation(CalculationBase):
 
-    @classmethod
-    def from_webapp(cls, param_dct: Dict, files: List):
-        """
-        Plan return a CalculationBase from the flask app.
-        param_dct will come from the form data
-        files should be a list
-        :param param_dct:
-        :param files: List[str or file objects]
-        :return:
-        """
-
-        par = dict()
-        return cls(**par)
-
     def write_inp(self, dest_dir):
         """
             Writes a .inp file for an ORCA calculation for LongLeaf cluster @UNC-CH
@@ -139,7 +125,28 @@ class Calculation(CalculationBase):
 
     def to_inp_dict(self) -> Dict:
         """Create a dict of params for the inp file writer."""
-        inp_param_dct = dict()
+        params_needed = [
+            'spin_restriction',
+            'functional',
+            'basis_set',
+            'calc_type',
+            'relativistic',
+            'grid1',
+            'final_grid',
+            'scf_level',
+            'dispersion_correction',
+            'solvent_model',
+            'solvent',
+            'num_procs',
+            'one_center_bool',
+            'resolution_id',
+            'aux_basis_set',
+            'max_iter',
+            'charge',
+            'multiplicity',
+            'xyz_name',
+        ]
+        inp_param_dct = {param : getattr(self, param) for param in params_needed}
         return inp_param_dct
 
     def to_sh_dict(self) -> Dict:
@@ -151,6 +158,7 @@ class Calculation(CalculationBase):
         """Replaces 'write_inp' and creates the .inp text file for an ORCA calculation."""
         #creat dict
         inp_params = self.to_inp_dict()
+        # validate params
         with open(template, 'r') as f:
             template_str = f.read()
         tm = Template(template_str)
