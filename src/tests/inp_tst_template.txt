@@ -1,0 +1,20 @@
+! UKS B3LYP ZORA-def2-TZVP TightOpt ZORA Grid4 NoFinalGrid
+! TightSCF D3BJ CPCMC(toluene)
+
+%pal nprocs 20 end
+
+%rel OneCenter True end
+
+%method 
+    RI {{resolution_id}}
+end
+
+%basis 
+    Aux "def2-SVP"
+end
+
+%scf Maxiter 1200 shift shift 0.3 erroff 0.8
+end end
+
+* xyzfile 1 {{multiplicity}} {{xyz_name}}
+

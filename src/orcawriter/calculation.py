@@ -2,8 +2,30 @@ import pathlib
 from typing import Dict, List
 from jinja2 import Template
 
-INP_TEMPLATE = r'orcawriter/orca_input_template.txt'
-SH_TEMPLATE = r'my_class/orca_sh_template.txt'
+INP_TEMPLATE = r'orcawriter/templates/orca_input_template.txt'
+SH_TEMPLATE = r'orcawriter/templates/orca_sh_template.txt'
+
+defaults_dict = {
+    'calc_type': 'Opt',
+    'functional': 'BP86',
+    'basis_set': 'def2-SVP',
+    'charge': 0,
+    'multiplicity': 1,
+    'relativistic': 'ZORA',
+    'dispersion_correction': 'D3BJ',
+    'solvent_model': '',
+    'solvent': '',
+    'resolution_id': True,
+    'aux_basis_set': 'def2-SVP',
+    'xyz_name': 'test_xyz_mol',
+    'spin_restriction' : 'UKS',
+    'grid1' : '',
+    'final_grid' : '',
+    'scf_level' : '',
+    'num_procs' : 20,
+    'one_center_bool' : True,
+    'max_iter': 1200,
+}
 
 
 class CalculationBase:
@@ -21,8 +43,8 @@ class CalculationBase:
     def __repr__(self) -> str:
         """Return str with the class name, and wanted attrs."""
         repr_str = f'{self.__class__.__name__}: '
-        wanted_attrs = ['id', 'name']
-        for attr in wanted_attrs:
+        wanted_repr_attrs = ['id', 'name']
+        for attr in wanted_repr_attrs:
             repr_str += f'{attr}={getattr(self, attr, __default=None)}'
         return repr_str
 
@@ -146,25 +168,24 @@ class Calculation(CalculationBase):
             'multiplicity',
             'xyz_name',
         ]
-        inp_param_dct = {param : getattr(self, param) for param in params_needed}
+        inp_param_dct = {param : getattr(self, param, __default=defaults_dict['param']) for param in params_needed}
         return inp_param_dct
 
-    def to_sh_dict(self) -> Dict:
-        """Create a dict of params for the inp file writer."""
-        sh_param_dct = dict()
-        return sh_param_dct
-
     def to_inp(self, template=INP_TEMPLATE) -> str:
-        """Replaces 'write_inp' and creates the .inp text file for an ORCA calculation."""
-        #creat dict
+        """Returns the string of the .inp file rendered with the params from attributes."""
+        #TODO Test this method
         inp_params = self.to_inp_dict()
-        # validate params
         with open(template, 'r') as f:
             template_str = f.read()
         tm = Template(template_str)
         output_str = tm.render(**inp_params)
         return output_str
 
+
+    def to_sh_dict(self) -> Dict:
+        """Create a dict of params for the inp file writer."""
+        sh_param_dct = dict()
+        return sh_param_dct
     def to_sh(self, file: str, template=SH_TEMPLATE):
         """Replaces 'write_inp' and creates the .sh text file for an ORCA calculation."""
         #creat dict
@@ -176,3 +197,27 @@ class Calculation(CalculationBase):
         return output_str
 
 
+class CalculationBuilder():
+    """Builder interface for a calculation object.
+
+    """
+    def collect_form_data(self):
+        pass
+
+    def collect_xyz_data(self):
+        pass
+
+    def collect_additional_params(self):
+        pass
+
+    def validate_params(self):
+        pass
+
+    def set_missing_params(self):
+        pass
+
+
+class CalculationDirector():
+
+    def __init__(self):
+        self.builder = CalculationBuilder()
