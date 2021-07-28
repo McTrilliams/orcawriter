@@ -10,7 +10,7 @@
 end
 
 %basis 
-    Aux {{aux_basis_set}}
+    Aux "{{aux_basis_set}}"
 end
 
 %scf Maxiter {{max_iter}} shift shift 0.3 erroff 0.8

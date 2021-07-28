@@ -6,7 +6,7 @@
 %rel OneCenter True end
 
 %method 
-    RI {{resolution_id}}
+    RI True
 end
 
 %basis 
@@ -16,5 +16,4 @@ end
 %scf Maxiter 1200 shift shift 0.3 erroff 0.8
 end end
 
-* xyzfile 1 {{multiplicity}} {{xyz_name}}
-
+* xyzfile 1 6 tst_xyz_data.xyz
